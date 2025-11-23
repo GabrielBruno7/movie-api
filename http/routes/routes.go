@@ -8,12 +8,12 @@ import (
 )
 
 func SetupRoutes(databaseConnection *sql.DB) *mux.Router {
-    router := mux.NewRouter()
+	router := mux.NewRouter()
 
-    taskHandler := handlers.NewTaskHandler(databaseConnection)
+	taskHandler := handlers.NewTaskHandler(databaseConnection)
 
-    router.HandleFunc("/tasks", taskHandler.List).Methods("GET")
-    router.HandleFunc("/tasks", taskHandler.Create).Methods("POST")
+	router.HandleFunc("/tasks", taskHandler.List).Methods("GET")
+	router.HandleFunc("/tasks", taskHandler.Create).Methods("POST")
 
-    return router
+	return router
 }

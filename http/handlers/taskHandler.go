@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"crud/domain/task"
+	"crud/http/dto"
 	"crud/infrastructure/database"
 	"database/sql"
 	"encoding/json"
@@ -9,17 +10,17 @@ import (
 )
 
 type TaskHandler struct {
-	repo task.Repository
+	persistence task.Repository
 }
 
 func NewTaskHandler(databaseConnection *sql.DB) *TaskHandler {
 	return &TaskHandler{
-		repo: database.NewTaskDb(databaseConnection),
+		persistence: database.NewTaskDb(databaseConnection),
 	}
 }
 
 func (h *TaskHandler) List(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.repo.FindAll()
+	tasks, err := h.persistence.FindAll()
 	if err != nil {
 		http.Error(w, "Erro ao listar tasks", http.StatusInternalServerError)
 		return
@@ -29,20 +30,27 @@ func (h *TaskHandler) List(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var data struct {
-		Title string `json:"title"`
-	}
+	var request dto.CreateTaskRequest
 
-	json.NewDecoder(r.Body).Decode(&data)
+	json.NewDecoder(r.Body).Decode(&request)
 
-	t := task.NewTask(data.Title)
+	task := task.NewTask(
+		request.Title,
+		request.Description,
+		false,
+	)
 
-	err := h.repo.Create(t)
+	err := h.persistence.Create(task)
 	if err != nil {
 		http.Error(w, "Erro ao criar task", http.StatusInternalServerError)
 		return
 	}
+    response := map[string]interface{}{
+        "message": "Task criada",
+        "id":      task.ID,
+    }
 
-	w.WriteHeader(201)
-	w.Write([]byte("Task criada"))
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(201)
+    json.NewEncoder(w).Encode(response)
 }
