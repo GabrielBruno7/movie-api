@@ -2,16 +2,13 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
-    container_name: go_app_dev
+      dockerfile: Dockerfile
+    container_name: go_app
     restart: unless-stopped
     depends_on:
       - db
     ports:
       - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/tmp
     environment:
       DB_HOST: db
       DB_USER: user
@@ -26,8 +23,6 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: dbname
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 

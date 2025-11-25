@@ -5,6 +5,7 @@ import (
 	"crud/http/routes"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -13,6 +14,6 @@ func main() {
 
 	router := routes.SetupRoutes(databaseConnection)
 
-	log.Println("Servidor rodando na porta 8000")
-	log.Fatal(http.ListenAndServe(":8000", router))
+	log.Println("Servidor rodando na porta " + os.Getenv("SERVER_PORT"))
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("SERVER_PORT"), router))
 }
