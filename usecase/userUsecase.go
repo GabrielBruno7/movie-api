@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"crud/domain/user"
+	"errors"
 
 	"github.com/google/uuid"
 )
@@ -24,7 +25,25 @@ func (userUsecase *UserUsecase) CreateUser(name string, email string, password s
 		password,
 	)
 
-	err := userUsecase.repository.Create(user)
+	err := userUsecase.checkIfUserAlreadyExists(user)
+	if err != nil {
+		return "", err
+	}
+
+	err = userUsecase.repository.Create(user)
 
 	return user.Id, err
+}
+
+func (userUsecase *UserUsecase) checkIfUserAlreadyExists(user *user.User) error {
+	user, err := userUsecase.repository.LoadUserByEmail(user)
+	if err != nil {
+		return err
+	}
+
+	if user != nil {
+		return errors.New("O usuário com o e-mail " + user.Email + " já existe")
+	}
+
+	return nil
 }

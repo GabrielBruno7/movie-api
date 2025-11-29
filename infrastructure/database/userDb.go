@@ -36,3 +36,29 @@ func (persistence *UserDb) Create(user *user.User) error {
 
 	return nil
 }
+
+func (p *UserDb) LoadUserByEmail(user *user.User) (*user.User, error) {
+	query := `
+		SELECT id, name, email, password
+		FROM users
+		WHERE email = $1
+		LIMIT 1
+	`
+
+	err := p.db.QueryRow(query, user.Email).Scan(
+		&user.Id,
+		&user.Name,
+		&user.Email,
+		&user.Password,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return user, nil
+}
