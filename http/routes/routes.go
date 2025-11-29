@@ -1,19 +1,16 @@
 package routes
 
 import (
-	"crud/http/handlers"
+	"crud/http/routes/task"
 	"database/sql"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(databaseConnection *sql.DB) *mux.Router {
-	router := mux.NewRouter()
+func SetupRoutes(db *sql.DB) *gin.Engine {
+	router := gin.Default()
 
-	taskHandler := handlers.NewTaskHandler(databaseConnection)
-
-	router.HandleFunc("/tasks", taskHandler.List).Methods("GET")
-	router.HandleFunc("/tasks", taskHandler.Create).Methods("POST")
+	task.RegisterTaskRoutes(router, db)
 
 	return router
 }

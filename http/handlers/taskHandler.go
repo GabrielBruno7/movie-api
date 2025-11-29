@@ -1,57 +1,44 @@
 package handlers
 
 import (
-	"crud/domain/task"
 	"crud/http/dto"
-	"crud/infrastructure/database"
-	"database/sql"
-	"encoding/json"
-	"net/http"
+	"crud/usecase"
 
-	"github.com/google/uuid"
+	"github.com/gin-gonic/gin"
 )
 
 type TaskHandler struct {
-	persistence task.Repository
+	usecase *usecase.TaskUsecase
 }
 
-func NewTaskHandler(databaseConnection *sql.DB) *TaskHandler {
+func NewTaskHandler(usecase *usecase.TaskUsecase) *TaskHandler {
 	return &TaskHandler{
-		persistence: database.NewTaskDb(databaseConnection),
+		usecase: usecase,
 	}
 }
 
-func (h *TaskHandler) List(w http.ResponseWriter, r *http.Request) {
-	tasks, err := h.persistence.FindAll()
+func (h *TaskHandler) List(context *gin.Context) {
+	tasks, err := h.usecase.ListTasks()
 	if err != nil {
-		http.Error(w, "Erro ao listar tasks", http.StatusInternalServerError)
+		context.JSON(500, gin.H{"error": "Erro ao listar tasks"})
 		return
 	}
 
-	json.NewEncoder(w).Encode(tasks)
+	context.JSON(200, tasks)
 }
 
-func (h *TaskHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *TaskHandler) Create(context *gin.Context) {
 	var request dto.CreateTaskRequest
-
-	json.NewDecoder(r.Body).Decode(&request)
-
-	task := task.NewTask(
-		uuid.New().String(),
-		request.Title,
-		request.Description,
-		false,
-	)
-
-	err := h.persistence.Create(task)
-	if err != nil {
-		http.Error(w, "Erro ao criar task", http.StatusInternalServerError)
+	if err := context.ShouldBindJSON(&request); err != nil {
+		context.JSON(400, gin.H{"error": "Dados inválidos"})
 		return
 	}
 
-	response := map[string]interface{}{"id": task.Id}
+	id, err := h.usecase.CreateTask(request.Title, request.Description)
+	if err != nil {
+		context.JSON(500, gin.H{"error": "Erro ao criar task"})
+		return
+	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-	json.NewEncoder(w).Encode(response)
+	context.JSON(201, gin.H{"id": id})
 }
