@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserUsecase struct {
@@ -30,6 +31,11 @@ func (userUsecase *UserUsecase) CreateUser(name string, email string, password s
 		return "", err
 	}
 
+	err = userUsecase.hashPassword(user)
+	if err != nil {
+		return "", err
+	}
+
 	err = userUsecase.repository.Create(user)
 
 	return user.Id, err
@@ -44,6 +50,17 @@ func (userUsecase *UserUsecase) checkIfUserAlreadyExists(user *user.User) error 
 	if user != nil {
 		return errors.New("O usuário com o e-mail " + user.Email + " já existe")
 	}
+
+	return nil
+}
+
+func (userUsecase *UserUsecase) hashPassword(user *user.User) error {
+	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	user.Password = string(hashedBytes)
 
 	return nil
 }
