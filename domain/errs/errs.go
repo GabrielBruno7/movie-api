@@ -13,6 +13,7 @@ const (
 	ErrUserNotFound       = "4003"
 	ErrMissingParameter   = "4004"
 	ErrRateNotFound       = "4005"
+	ErrGroupAlreadyExists = "4006"
 
 	ErrInternalServer  = "5000"
 	ErrWhenSearchMovie = "5001"
@@ -30,6 +31,7 @@ var errorMessages = map[string]string{
 	ErrTMDBConnection:     "Falha na conexão com o serviço de filmes",
 	ErrTMDBAPIError:       "Erro na API de filmes - verifique sua chave de acesso",
 	ErrRateNotFound:       "Avaliação não encontrada",
+	ErrGroupAlreadyExists: "Um grupo com esse nome já existe",
 }
 
 type DomainError struct {

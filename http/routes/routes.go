@@ -2,6 +2,7 @@ package routes
 
 import (
 	"crud/http/routes/auth"
+	"crud/http/routes/group"
 	"crud/http/routes/movie"
 	"crud/http/routes/rate"
 	"crud/http/routes/task"
@@ -19,6 +20,7 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 	auth.RegisterAuthRoutes(router, db)
 	movie.RegisterMovieRoutes(router, db)
 	rate.RegisterRateRoutes(router, db)
+	group.RegisterGroupRoutes(router, db)
 
 	return router
 }
