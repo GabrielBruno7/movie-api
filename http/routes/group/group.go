@@ -22,4 +22,5 @@ func RegisterGroupRoutes(router *gin.Engine, db *sql.DB) {
 	groupHandler := handlers.NewGroupHandler(groupUsecase)
 
 	protected.POST("/group/create", groupHandler.ActionCreateGroup)
+	protected.POST("/group/:id/invite/send", groupHandler.ActionSendGroupInvite)
 }

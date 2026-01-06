@@ -8,12 +8,13 @@ import (
 )
 
 const (
-	ErrInvalidBody        = "4001"
-	ErrInvalidCredentials = "4002"
-	ErrUserNotFound       = "4003"
-	ErrMissingParameter   = "4004"
-	ErrRateNotFound       = "4005"
-	ErrGroupAlreadyExists = "4006"
+	ErrInvalidBody                = "4001"
+	ErrInvalidCredentials         = "4002"
+	ErrUserNotFound               = "4003"
+	ErrMissingParameter           = "4004"
+	ErrRateNotFound               = "4005"
+	ErrGroupAlreadyExists         = "4006"
+	ErrGroupDoesNotBelongToSender = "4007"
 
 	ErrInternalServer  = "5000"
 	ErrWhenSearchMovie = "5001"
@@ -22,16 +23,17 @@ const (
 )
 
 var errorMessages = map[string]string{
-	ErrInvalidCredentials: "Credenciais inválidas",
-	ErrUserNotFound:       "Usuário não encontrado",
-	ErrInvalidBody:        "Dados inválidos",
-	ErrMissingParameter:   "Parâmetro obrigatório ausente",
-	ErrInternalServer:     "Ocorreu um erro inesperado",
-	ErrWhenSearchMovie:    "Ocorreu um erro inesperado ao buscar filmes",
-	ErrTMDBConnection:     "Falha na conexão com o serviço de filmes",
-	ErrTMDBAPIError:       "Erro na API de filmes - verifique sua chave de acesso",
-	ErrRateNotFound:       "Avaliação não encontrada",
-	ErrGroupAlreadyExists: "Um grupo com esse nome já existe",
+	ErrInvalidCredentials:         "Credenciais inválidas",
+	ErrUserNotFound:               "Usuário não encontrado",
+	ErrInvalidBody:                "Dados inválidos",
+	ErrMissingParameter:           "Parâmetro obrigatório ausente",
+	ErrInternalServer:             "Ocorreu um erro inesperado",
+	ErrWhenSearchMovie:            "Ocorreu um erro inesperado ao buscar filmes",
+	ErrTMDBConnection:             "Falha na conexão com o serviço de filmes",
+	ErrTMDBAPIError:               "Erro na API de filmes - verifique sua chave de acesso",
+	ErrRateNotFound:               "Avaliação não encontrada",
+	ErrGroupAlreadyExists:         "Um grupo com esse nome já existe",
+	ErrGroupDoesNotBelongToSender: "O grupo não pertence ao usuário que está enviando o convite",
 }
 
 type DomainError struct {

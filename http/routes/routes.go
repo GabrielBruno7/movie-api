@@ -18,8 +18,8 @@ func SetupRoutes(db *sql.DB) *gin.Engine {
 	task.RegisterTaskRoutes(router, db)
 	user.RegisterUserRoutes(router, db)
 	auth.RegisterAuthRoutes(router, db)
-	movie.RegisterMovieRoutes(router, db)
 	rate.RegisterRateRoutes(router, db)
+	movie.RegisterMovieRoutes(router, db)
 	group.RegisterGroupRoutes(router, db)
 
 	return router

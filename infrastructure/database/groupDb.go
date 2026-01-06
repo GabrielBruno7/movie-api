@@ -1,7 +1,6 @@
 package database
 
 import (
-	"crud/debug"
 	"crud/domain/group"
 	"database/sql"
 )
@@ -52,7 +51,6 @@ func (persistence *GroupDb) CreateMemberGroup(group *group.Group) error {
 	)
 
 	if err != nil {
-		debug.DD(err)
 		return err
 	}
 
@@ -83,4 +81,55 @@ func (g *GroupDb) LoadGroupByName(group *group.Group) (*group.Group, error) {
 	}
 
 	return group, nil
+}
+
+func (g *GroupDb) LoadGroupById(group *group.Group) (*group.Group, error) {
+	query := `
+		SELECT id, name, owner_id
+		FROM groups
+		WHERE id = $1
+		AND owner_id = $2
+		LIMIT 1
+	`
+
+	err := g.db.QueryRow(query, group.ID, group.User.Id).Scan(
+		&group.ID,
+		&group.Name,
+		&group.User.Id,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	return group, nil
+}
+
+func (persistence *GroupDb) CreateInvite(group *group.Group) error {
+	query := `
+	    INSERT INTO group_invitations (
+			id,
+			group_id,
+			sender_id,
+			receiver_id
+	    ) VALUES ($1, $2, $3, $4)
+	    RETURNING id
+	`
+
+	_, err := persistence.db.Exec(query,
+		group.Invite.ID,
+		group.ID,
+		group.Invite.Sender.Id,
+		group.Invite.Receiver.Id,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

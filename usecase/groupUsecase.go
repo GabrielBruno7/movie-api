@@ -56,3 +56,39 @@ func (groupUsecase *GroupUsecase) loadUser(group *group.Group) (*group.Group, er
 
 	return group, nil
 }
+
+func (groupUsecase *GroupUsecase) SendInvite(group *group.Group) error {
+	sender, err := groupUsecase.UserUsecase.LoadUserByEmail(group.Invite.Sender)
+	if err != nil {
+		return err
+	}
+
+	group.Invite.Sender = sender
+
+	group.User = *group.Invite.Sender
+
+	group, err = groupUsecase.repository.LoadGroupById(group)
+	if err != nil {
+		return err
+	}
+
+	if group == nil {
+		return errs.NewWithCode(errs.ErrGroupDoesNotBelongToSender, nil)
+	}
+
+	receiver, err := groupUsecase.UserUsecase.LoadUserByEmail(group.Invite.Receiver)
+	if err != nil {
+		return err
+	}
+
+	group.Invite.Receiver = receiver
+
+	group.Invite.ID = uuid.New().String()
+
+	err = groupUsecase.repository.CreateInvite(group)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
